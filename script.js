@@ -5,7 +5,10 @@ class Bolinha {
   constructor({
     c_cb, c_ob, c_pb, // cores
     r_cb, r_ob, r_pb, // raios
-    x_cb, y_cb, x_ob, y_ob, x_pb, y_pb // posições
+    // posições
+    x_cb, y_cb, 
+    x_ob = x_cb + 25, y_ob = y_cb - 20, // olho depende da posição da bolinha
+    x_pb = x_ob + 5, y_pb = y_ob // pupila depende do olho
   }) {
     this.c_cb = c_cb; // cor do corpo
     this.c_ob = c_ob; // cor do olho
@@ -33,10 +36,6 @@ const bolinha = new Bolinha({
   r_pb: 5,
   x_cb: 250,
   y_cb: 200,
-  x_ob: 275,
-  y_ob: 180,
-  x_pb: 280,
-  y_pb: 180
 });
 
 function limpar_canvas() {
@@ -68,9 +67,17 @@ function desenhar_bolinha() {
   ctx.fill();
 }
 
-function gameLoop() {
-  desenhar_bolinha();
-  requestAnimationFrame(gameLoop);
+function mexer_bolinha() {
+  bolinha.x_cb += 5;
+  bolinha.x_ob = bolinha.x_cb + 25;
+  bolinha.x_pb = bolinha.x_ob + 5;
 }
 
-gameLoop();
+function rodar_jogo() {
+  limpar_canvas();
+  desenhar_bolinha();
+  mexer_bolinha();
+  requestAnimationFrame(rodar_jogo);
+}
+
+rodar_jogo();
