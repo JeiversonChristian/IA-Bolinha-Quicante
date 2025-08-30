@@ -5,10 +5,12 @@ class Bolinha {
   constructor({
     c_cb, c_ob, c_pb, // cores
     r_cb, r_ob, r_pb, // raios
+    d_x_o, d_y_o, d_x_p, // diferenças para deslocar olho e pupila
     // posições
     x_cb, y_cb, 
-    x_ob = x_cb + 25, y_ob = y_cb - 20, // olho depende da posição da bolinha
-    x_pb = x_ob + 5, y_pb = y_ob // pupila depende do olho
+    x_ob = x_cb + d_x_o, y_ob = y_cb - d_y_o, // olho depende da posição da bolinha
+    x_pb = x_ob + d_x_p, y_pb = y_ob, // pupila depende do olho
+    v // velocidade
   }) {
     this.c_cb = c_cb; // cor do corpo
     this.c_ob = c_ob; // cor do olho
@@ -17,6 +19,10 @@ class Bolinha {
     this.r_cb = r_cb; // raio do corpo
     this.r_ob = r_ob; // raio do olho
     this.r_pb = r_pb; // raio da pupila
+
+    this.d_x_o = d_x_o; // o tanto que o olho é descolado em relação ao corpo - eixo x
+    this.d_y_o = d_y_o; // item no eixo y
+    this.d_x_p = d_x_p; // idem em relação à pupila - mas ela fica na mesma altura que o olho
     
     this.x_cb = x_cb; // posição x do corpo
     this.y_cb = y_cb; // posição y do corpo
@@ -24,6 +30,8 @@ class Bolinha {
     this.y_ob = y_ob; // posição y do olho
     this.x_pb = x_pb; // posição x da pupila
     this.y_pb = y_pb; // posição y da pupila
+
+    this.v = v; // velocidade da celula
   }
 }
 
@@ -36,6 +44,10 @@ const bolinha = new Bolinha({
   r_pb: 5,
   x_cb: 250,
   y_cb: 200,
+  d_x_o: 10,
+  d_y_o: 20,
+  d_x_p: 5,
+  v: 5,
 });
 
 function limpar_canvas() {
@@ -68,9 +80,9 @@ function desenhar_bolinha() {
 }
 
 function mexer_bolinha() {
-  bolinha.x_cb += 5;
-  bolinha.x_ob = bolinha.x_cb + 25;
-  bolinha.x_pb = bolinha.x_ob + 5;
+  bolinha.x_cb += bolinha.v;
+  bolinha.x_ob = bolinha.x_cb + bolinha.d_x_o;
+  bolinha.x_pb = bolinha.x_ob + bolinha.d_x_p;
 }
 
 function rodar_jogo() {
