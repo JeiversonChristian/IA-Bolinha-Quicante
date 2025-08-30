@@ -1,16 +1,22 @@
 let canvas = document.getElementById("canvasPrincipal");
 let ctx = canvas.getContext("2d");
 
+// variáveis do mundo
+
+let g = 0.8; // gravidade
+let a_c = canvas.height; // altura do chão
+
 class Bolinha {
   constructor({
     c_cb, c_ob, c_pb, // cores
     r_cb, r_ob, r_pb, // raios
     d_x_o, d_y_o, d_x_p, // diferenças para deslocar olho e pupila
     // posições
-    x_cb, y_cb, 
+    x_cb, y_cb = a_c - r_cb, // a altura da célula é no chão 
     x_ob = x_cb + d_x_o, y_ob = y_cb - d_y_o, // olho depende da posição da bolinha
     x_pb = x_ob + d_x_p, y_pb = y_ob, // pupila depende do olho
-    v // velocidade
+    vy, // velocidade no eixo y
+    f_p // força do pulo
   }) {
     this.c_cb = c_cb; // cor do corpo
     this.c_ob = c_ob; // cor do olho
@@ -31,7 +37,14 @@ class Bolinha {
     this.x_pb = x_pb; // posição x da pupila
     this.y_pb = y_pb; // posição y da pupila
 
-    this.v = v; // velocidade da celula
+    this.vy = vy; // velocidade da célula para cima ou para baixo
+    this.f_p = f_p; // força do pulo da célula
+  }
+
+  pular() {
+    if (this.vy === 0 && this.y_cb + this.r_cb >= a_c) {
+      this.vy = -this.f_p;
+    }
   }
 }
 
@@ -43,11 +56,11 @@ const bolinha = new Bolinha({
   r_ob: 12,
   r_pb: 5,
   x_cb: 250,
-  y_cb: 200,
   d_x_o: 10,
   d_y_o: 20,
   d_x_p: 5,
-  v: 5,
+  vy: 0,
+  f_p: 15
 });
 
 function limpar_canvas() {
@@ -79,16 +92,34 @@ function desenhar_bolinha() {
   ctx.fill();
 }
 
-function mexer_bolinha() {
-  bolinha.x_cb += bolinha.v;
-  bolinha.x_ob = bolinha.x_cb + bolinha.d_x_o;
-  bolinha.x_pb = bolinha.x_ob + bolinha.d_x_p;
+function aplicar_fisica_no_mundo() {
+  // aplica gravidade na bolinha
+  if (bolinha.y_cb + bolinha.r_cb < a_c){
+    bolinha.vy += g;
+  }
+  bolinha.y_cb += bolinha.vy;
+  
+  // reposiciona olho e pupila
+  bolinha.y_ob = bolinha.y_cb - bolinha.d_y_o;
+  bolinha.y_pb = bolinha.y_ob;
+
+  // se bater no chão
+  if (bolinha.y_cb + bolinha.r_cb > a_c) {
+    bolinha.y_cb = a_c - bolinha.r_cb;
+    bolinha.vy = 0; // para de cair
+  }
 }
+
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space") {
+    bolinha.pular();
+  }
+});
 
 function rodar_jogo() {
   limpar_canvas();
   desenhar_bolinha();
-  mexer_bolinha();
+  aplicar_fisica_no_mundo();
   requestAnimationFrame(rodar_jogo);
 }
 
