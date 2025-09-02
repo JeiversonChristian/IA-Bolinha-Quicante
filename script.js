@@ -48,6 +48,29 @@ class Bolinha {
   }
 }
 
+class Obstaculo {
+  constructor ({
+    src, // caminho da imagem
+    x,   // posição inicial no eixo X
+    y,   // posição inicial no eixo Y
+    v    // velocidade
+  }) {
+    this.imagem = new Image();
+    this.imagem.src = src;
+    this.x = x;              
+    this.y = y;             
+    this.v = v; 
+  }
+
+  desenhar() {
+    ctx.drawImage(this.imagem, this.x, this.y);
+  }
+
+  mover() {
+    this.x -= this.v;
+  }
+}
+
 const bolinha = new Bolinha({
   c_cb: "blue",
   c_ob: "white",
@@ -55,12 +78,21 @@ const bolinha = new Bolinha({
   r_cb: 30,
   r_ob: 12,
   r_pb: 5,
-  x_cb: 250,
+  x_cb: 150,
   d_x_o: 10,
   d_y_o: 20,
   d_x_p: 5,
   vy: 0,
   f_p: 15
+});
+
+ let src_obstaculo_1 = "imgs/obstaculo1.png";
+
+ const obstaculo_1 = new Obstaculo({
+  src: "imgs/obstaculo1.png",
+  x: canvas.width / 2 - 40,   
+  y: a_c - 80, 
+  v: 5
 });
 
 function limpar_canvas() {
@@ -92,6 +124,10 @@ function desenhar_bolinha() {
   ctx.fill();
 }
 
+function desenhar_obstaculos() {
+  obstaculo_1.desenhar();
+}
+
 function aplicar_fisica_no_mundo() {
   // aplica gravidade na bolinha
   if (bolinha.y_cb + bolinha.r_cb < a_c){
@@ -119,6 +155,7 @@ document.addEventListener("keydown", (e) => {
 function rodar_jogo() {
   limpar_canvas();
   desenhar_bolinha();
+  desenhar_obstaculos();
   aplicar_fisica_no_mundo();
   requestAnimationFrame(rodar_jogo);
 }
